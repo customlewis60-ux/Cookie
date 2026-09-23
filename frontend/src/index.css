@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@layer base {
+  :root { --background: 220 7% 4%; --foreground: 40 10% 94%; --card: 220 6% 7%; --card-foreground: 40 10% 94%; --popover: 220 6% 8%; --popover-foreground: 40 10% 94%; --primary: 32 49% 64%; --primary-foreground: 30 20% 10%; --secondary: 220 5% 12%; --secondary-foreground: 40 10% 94%; --muted: 220 5% 12%; --muted-foreground: 220 4% 58%; --accent: 220 5% 15%; --accent-foreground: 40 10% 94%; --destructive: 0 53% 49%; --destructive-foreground: 0 0% 98%; --border: 220 5% 16%; --input: 220 5% 19%; --ring: 32 49% 64%; --radius: .5rem; }
+  * { @apply border-border; box-sizing: border-box; letter-spacing: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 100px; }
+  body { margin: 0; font-family: 'DM Sans', sans-serif; -webkit-font-smoothing: antialiased; color: #f0f0ec; background: #090a0b; font-size: 14px; }
+  h1, h2, h3, h4, p { margin: 0; }
+  button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
+  button, a { transition: color .2s, background-color .2s, border-color .2s, opacity .2s, transform .2s; }
+  a { text-decoration: none; color: inherit; }
+  button { cursor: pointer; }
+  button:disabled { cursor: not-allowed; }
+  button:focus-visible, a:focus-visible { outline: 2px solid #d1a575; outline-offset: 4px; }
+  ::selection { color: #faf3e9; background: #674c32; }
+  ::-webkit-scrollbar { width: 6px; height: 6px; } ::-webkit-scrollbar-track { background: #0c0d0e; } ::-webkit-scrollbar-thumb { background: #393a3c; border-radius: 5px; }
+}

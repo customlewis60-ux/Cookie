@@ -1,0 +1,17 @@
+import { Loader2, LockKeyhole, Plus, ShieldCheck, Eye, KeyRound, Bot, Trash2, Download, Upload, Pencil } from 'lucide-react';
+import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from './ui/dialog';
+import { relativeTime } from '../lib/api';
+export const Btn = ({ children, variant = 'primary', className = '', busy, ...props }) => <Button className={`btn btn-${variant} ${className}`} disabled={busy || props.disabled} {...props}>{busy && <Loader2 size={16} className="spin"/>}{children}</Button>;
+export const Modal = ({ open, onClose, title, description, children, testId = 'dialog', wide = false }) => <Dialog open={open} onOpenChange={v => !v && onClose()}><DialogContent className={`cookie-dialog ${wide ? 'dialog-wide' : ''}`} data-testid={testId}><DialogTitle className="dialog-title" data-testid={`${testId}-title`}>{title}</DialogTitle><DialogDescription className="dialog-description" data-testid={`${testId}-description`}>{description}</DialogDescription>{children}</DialogContent></Dialog>;
+export const PageHeading = ({ eyebrow, title, subtitle, children }) => <div className="page-heading"><div>{eyebrow && <div className="eyebrow" data-testid="page-eyebrow">{eyebrow}</div>}<h1 data-testid="page-title">{title}</h1><p data-testid="page-subtitle">{subtitle}</p></div><div className="heading-actions">{children}</div></div>;
+export const Empty = ({ icon: Icon = LockKeyhole, title, text, children }) => <div className="empty-state" data-testid="empty-state"><Icon size={30}/><h3 data-testid="empty-title">{title}</h3><p data-testid="empty-description">{text}</p>{children}</div>;
+export const Badge = ({ children, tone = '', testId }) => <span className={`status-badge ${tone}`} data-testid={testId}>{children}</span>;
+export const Stat = ({ icon: Icon, label, value, sub, testId }) => <div className="stat" data-testid={testId}><div className="stat-label"><span>{label}</span><Icon size={17}/></div><strong data-testid={`${testId}-value`}>{value}</strong><span className="stat-sub">{sub}</span></div>;
+const eventIcons = { memory_created: Plus, memory_accessed: Eye, memory_updated: Pencil, memory_deleted: Trash2, permission_granted: ShieldCheck, permission_revoked: KeyRound, agent_connected: Bot, agent_disconnected: Bot, memory_exported: Download, memory_imported: Upload };
+export const ActivityRows = ({ activity, agents = [], prefix = 'activity' }) => <div className="activity-rows">{activity.map(item => {
+  const Icon = eventIcons[item.action] || ShieldCheck;
+  const agent = agents.find(a => a.id === item.agent_id);
+  return <div className="activity-row" key={item.id} data-testid={`${prefix}-${item.id}`}><span className={`event-icon ${item.action.includes('revoked') || item.action.includes('deleted') ? 'muted' : ''}`}><Icon size={17}/></span><div className="event-info"><span className="event-action">{agent && item.action === 'memory_accessed' ? `${agent.name} accessed` : item.action.replaceAll('_', ' ')}</span><span className="event-title">{item.title}</span></div><time dateTime={item.timestamp}>{relativeTime(item.timestamp)}</time></div>;
+})}</div>;
+export const SectionHeading = ({ title, children }) => <div className="section-heading"><h2>{title}</h2>{children}</div>;

@@ -1,0 +1,13 @@
+import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { Activity as ActivityIcon, Search, RotateCw } from 'lucide-react';
+import { PageHeading, ActivityRows, Empty, Btn } from '../components/Common';
+import { useVault } from '../context/VaultContext';
+import { toast } from '../components/ui/sonner';
+import { errorMessage } from '../lib/api';
+export default function Activity() {
+  const { data, refresh } = useVault(); const [params] = useSearchParams(); const [filter, setFilter] = useState(params.get('filter') === 'permissions' ? 'Permissions' : 'All activity'); const [search, setSearch] = useState(''); const [busy, setBusy] = useState(false);
+  const filtered = data.activity.filter(a => (filter === 'All activity' || a.action.startsWith({ Memories: 'memory_', Permissions: 'permission_', Agents: 'agent_', 'API keys': 'key_' }[filter])) && `${a.title} ${a.action}`.toLowerCase().includes(search.toLowerCase()));
+  const groups = filtered.reduce((acc, item) => { const date = new Date(item.timestamp).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); (acc[date] ||= []).push(item); return acc; }, {});
+  return <><PageHeading eyebrow="A CLEAR RECORD" title="Nothing behind your back." subtitle="Every memory, connection, and permission change. In one place."><Btn variant="secondary" busy={busy} data-testid="refresh-activity" onClick={async () => { setBusy(true); try { await refresh(); } catch (e) { toast.error(errorMessage(e)); } finally { setBusy(false); } }}><RotateCw size={15}/> Refresh</Btn></PageHeading><div className="activity-toolbar"><div className="page-tabs">{['All activity', 'Memories', 'Permissions', 'Agents', 'API keys'].map(f => <button data-testid={`activity-filter-${f.toLowerCase().replace(' ', '-')}`} key={f} className={filter === f ? 'active' : ''} onClick={() => setFilter(f)}>{f}</button>)}</div><div className="search-field"><Search size={16}/><input data-testid="activity-search" aria-label="Search activity" placeholder="Search activity…" value={search} onChange={e => setSearch(e.target.value)}/></div></div>{filtered.length ? <div className="activity-timeline">{Object.entries(groups).map(([date, events]) => <section key={date}><h2 className="timeline-date">{date}<span>{events.length} events</span></h2><ActivityRows activity={events} agents={data.agents}/></section>)}</div> : <Empty icon={ActivityIcon} title="All quiet here." text="Matching activity will appear as you use your vault."/>}<p className="fine-print activity-footnote">Showing up to 200 recent events. These are application records, not blockchain transactions.</p></>;
+}

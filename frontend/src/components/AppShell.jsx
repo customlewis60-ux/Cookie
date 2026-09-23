@@ -1,0 +1,26 @@
+import { useState } from 'react';
+import { Link, NavLink, Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Database, Bot, ShieldCheck, Activity, Code2, Settings, ArrowUpRight, LockKeyhole, LogOut, Menu, X, ChevronRight, Wallet, Loader2 } from 'lucide-react';
+import { Brand, CookieMark } from './Brand';
+import { Btn, Modal } from './Common';
+import { AuthDialog } from './AuthDialog';
+import { useVault } from '../context/VaultContext';
+import { shortAddress, errorMessage } from '../lib/api';
+import { toast } from './ui/sonner';
+const navigation = [{ path: '', label: 'Overview', icon: LayoutDashboard }, { path: '/memory', label: 'Memory', icon: Database }, { path: '/agents', label: 'Agents', icon: Bot }, { path: '/permissions', label: 'Permissions', icon: ShieldCheck }, { path: '/activity', label: 'Activity', icon: Activity }, { path: '/api', label: 'API', icon: Code2 }, { path: '/settings', label: 'Settings', icon: Settings }];
+export const AppShell = () => {
+  const { user, key, setKey, loading, disconnect } = useVault();
+  const [mobile, setMobile] = useState(false);
+  const [unlockOpen, setUnlockOpen] = useState(false);
+  const [exit, setExit] = useState(false);
+  const location = useLocation(); const navigate = useNavigate();
+  const title = navigation.find(n => '/app' + n.path === location.pathname)?.label || 'Overview';
+  if (loading) return <div className="page-loading"><CookieMark/><Loader2 className="spin"/><span>Opening COOKIE…</span></div>;
+  if (!user) return <Navigate to="/" replace/>;
+  return <div className="app-shell"><aside className={`sidebar ${mobile ? 'sidebar-open' : ''}`}><Link to="/" className="sidebar-brand" data-testid="sidebar-brand"><Brand/><span className="mini-tag">BETA</span></Link><button className="icon-button sidebar-close" data-testid="sidebar-close" aria-label="Close menu" onClick={() => setMobile(false)}><X size={20}/></button><div className="workspace-label">PERSONAL WORKSPACE</div><nav className="app-nav">{navigation.map(n => <NavLink data-testid={`nav-${n.label.toLowerCase()}`} key={n.path} end={n.path === ''} to={'/app' + n.path} onClick={() => setMobile(false)} className={({ isActive }) => isActive ? 'active' : ''}><n.icon size={18}/><span>{n.label}</span>{n.label === 'API' && <span className="nav-code">⌘</span>}</NavLink>)}</nav><div className="sidebar-bottom"><div className="vault-status"><ShieldCheck size={19}/><div><strong>Your memory. Your rules.</strong><span>AES-256-GCM encryption</span></div></div><Link className="sidebar-docs" to="/docs" data-testid="sidebar-docs"><Code2 size={16}/> Developer documentation <ArrowUpRight size={14}/></Link><button className="wallet-panel" data-testid="wallet-disconnect" onClick={() => setExit(true)}><span className="wallet-avatar"><Wallet size={17}/></span><span><strong className="mono">{shortAddress(user.wallet_address)}</strong><small>Demo wallet <i/></small></span><LogOut size={16}/></button></div></aside>{mobile && <button aria-label="Close navigation" className="sidebar-backdrop" data-testid="sidebar-backdrop" onClick={() => setMobile(false)}/>}
+    <div className="app-main"><header className="app-topbar"><div><button className="icon-button mobile-toggle" aria-label="Open menu" data-testid="app-mobile-menu" onClick={() => setMobile(true)}><Menu size={20}/></button><span className="breadcrumb-root">Workspace</span><ChevronRight size={14}/><span data-testid="breadcrumb-page">{title}</span></div><div><span className="live-label"><i/>{key ? 'Vault unlocked' : 'Vault locked'}</span><span className="top-divider"/><button data-testid="lock-vault" title={key ? 'Lock vault' : 'Unlock vault'} aria-label={key ? 'Lock vault' : 'Unlock vault'} className="icon-button" onClick={() => key ? setKey(null) : setUnlockOpen(true)}><LockKeyhole size={17}/></button><span className="mini-tag demo-tag">DEMO WORKSPACE</span></div></header>
+      {key ? <main className="app-content" key={location.pathname}><Outlet/></main> : <main className="locked-vault"><div className="lock-emblem"><LockKeyhole size={32}/></div><span className="eyebrow">YOUR PRIVATE MEMORY LAYER</span><h1 data-testid="locked-title">A safe place for your context.</h1><p>Your encrypted vault is locked. Your memories stay yours.</p><Btn data-testid="unlock-vault-button" onClick={() => setUnlockOpen(true)}>Unlock vault <ArrowUpRight size={17}/></Btn></main>}
+      <footer className="app-footer"><span><CookieMark/> COOKIE PROTOCOL <span>v0.1</span></span><span>Encrypted. Permissioned. Portable.</span></footer>
+    </div><AuthDialog open={unlockOpen} onClose={() => setUnlockOpen(false)} redirect={false}/><Modal open={exit} onClose={() => setExit(false)} title="Disconnect your demo wallet?" description="Your vault will be locked. This browser can reconnect to the same demo identity; keep an encrypted export for use on another device." testId="disconnect-dialog"><div className="dialog-actions"><Btn variant="secondary" data-testid="cancel-disconnect" onClick={() => setExit(false)}>Stay connected</Btn><Btn data-testid="confirm-disconnect" onClick={async () => { try { await disconnect(); navigate('/'); } catch (e) { toast.error(errorMessage(e)); } }}>Disconnect <LogOut size={16}/></Btn></div></Modal>
+  </div>;
+};

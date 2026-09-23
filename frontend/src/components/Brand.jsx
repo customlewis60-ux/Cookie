@@ -1,0 +1,3 @@
+import { Cpu } from 'lucide-react';
+export const CookieMark = ({ className = '' }) => <span className={`cookie-mark ${className}`} aria-hidden="true"><i className="crumb c1"/><i className="crumb c2"/><i className="crumb c3"/><i className="crumb c4"/><Cpu size={17} strokeWidth={1.8}/></span>;
+export const Brand = ({ compact = false }) => <span className="brand"><CookieMark/>{!compact && <span>cookie<span className="brand-dot">.</span></span>}</span>;
