@@ -1,0 +1,15 @@
+import { Link } from 'react-router-dom';
+import { Database, LockKeyhole, ShieldCheck, ArrowUpRight } from 'lucide-react';
+
+export const StudioContext = ({ memories, agent, selected, setSelected, disabled, mode, setMode }) => {
+  const allowed = memories.filter(m => m.privacy === 'shareable' && m.agent_ids.includes(agent?.id));
+  const toggle = id => setSelected(selected.includes(id) ? selected.filter(m => m !== id) : [...selected, id]);
+  return <section className="studio-context-section"><div className="studio-section-title"><span>03</span><h2>Choose the context</h2><span data-testid="studio-authorized-count">{allowed.length} authorized</span></div>
+    <div className="studio-mode-control" role="group" aria-label="Context mode"><button data-testid="studio-mode-with" className={mode === 'with' ? 'active' : ''} disabled={disabled} onClick={() => setMode('with')}><Database size={15}/> With COOKIE memory</button><button data-testid="studio-mode-without" className={mode === 'without' ? 'active' : ''} disabled={disabled} onClick={() => setMode('without')}><LockKeyhole size={15}/> Without memory</button></div>
+    {mode === 'without' ? <div className="studio-baseline-note" data-testid="studio-baseline-note"><LockKeyhole size={21}/><div><strong>A fresh start. No vault context.</strong><p>The same agent and model, with only your task. Each run starts a new AI session.</p></div></div> : <><div className="studio-memory-picker">{memories.map(memory => {
+      const authorized = allowed.some(m => m.id === memory.id);
+      const reason = memory.privacy === 'private' ? 'Private · only you' : authorized ? 'Authorized for this agent' : 'Permission required';
+      return <label key={memory.id} className={`studio-memory-choice ${authorized ? '' : 'unavailable'} ${selected.includes(memory.id) && authorized ? 'chosen' : ''}`} data-testid={`studio-memory-choice-${memory.id}`}><input data-testid={`studio-select-memory-${memory.id}`} type="checkbox" checked={authorized && selected.includes(memory.id)} disabled={disabled || !authorized || (!selected.includes(memory.id) && selected.length >= 6)} onChange={() => toggle(memory.id)}/><span className="studio-memory-symbol">{authorized ? <Database size={17}/> : <LockKeyhole size={17}/>}</span><span className="studio-memory-label"><strong data-testid={`studio-memory-title-${memory.id}`}>{memory.title}</strong><small>{memory.category} · {reason}</small></span>{authorized && <ShieldCheck size={14}/>}</label>;
+    })}</div>{!memories.length && <p className="studio-inline-empty" data-testid="studio-no-memories">Your vault is empty. Add a shareable memory to give this agent context.</p>}<div className="studio-context-footer"><span data-testid="studio-selection-count">{selected.filter(id => allowed.some(m => m.id === id)).length} / 6 selected</span><Link to="/app/memory" data-testid="studio-manage-memory">Memory & access <ArrowUpRight size={12}/></Link></div></>}
+  </section>;
+};

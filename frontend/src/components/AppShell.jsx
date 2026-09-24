@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Database, Bot, ShieldCheck, Activity, Code2, Settings, ArrowUpRight, LockKeyhole, LogOut, Menu, X, ChevronRight, Wallet, Loader2 } from 'lucide-react';
+import { LayoutDashboard, Database, Bot, Play, ShieldCheck, Activity, Code2, Settings, ArrowUpRight, LockKeyhole, LogOut, Menu, X, ChevronRight, Wallet, Loader2 } from 'lucide-react';
 import { Brand, CookieMark } from './Brand';
 import { Btn, Modal } from './Common';
 import { AuthDialog } from './AuthDialog';
 import { useVault } from '../context/VaultContext';
 import { shortAddress, errorMessage } from '../lib/api';
 import { toast } from './ui/sonner';
-const navigation = [{ path: '', label: 'Overview', icon: LayoutDashboard }, { path: '/memory', label: 'Memory', icon: Database }, { path: '/agents', label: 'Agents', icon: Bot }, { path: '/permissions', label: 'Permissions', icon: ShieldCheck }, { path: '/activity', label: 'Activity', icon: Activity }, { path: '/api', label: 'API', icon: Code2 }, { path: '/settings', label: 'Settings', icon: Settings }];
+const navigation = [{ path: '', label: 'Overview', icon: LayoutDashboard }, { path: '/memory', label: 'Memory', icon: Database }, { path: '/agents', label: 'Agents', icon: Bot }, { path: '/studio', label: 'Studio', icon: Play }, { path: '/permissions', label: 'Permissions', icon: ShieldCheck }, { path: '/activity', label: 'Activity', icon: Activity }, { path: '/api', label: 'API', icon: Code2 }, { path: '/settings', label: 'Settings', icon: Settings }];
 export const AppShell = () => {
   const { user, key, setKey, loading, disconnect } = useVault();
   const [mobile, setMobile] = useState(false);

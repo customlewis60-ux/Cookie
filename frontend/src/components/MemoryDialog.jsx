@@ -13,7 +13,7 @@ export const MemoryDialog = ({ memory, onClose }) => {
   const [title, setTitle] = useState(memory?.title || '');
   const [category, setCategory] = useState(memory?.category || 'Personal');
   const [privacy, setPrivacy] = useState(memory?.privacy || 'private');
-  const [content, setContent] = useState('');
+  const [content, setContent] = useState(memory?.content || '');
   const [passphrase, setPassphrase] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
